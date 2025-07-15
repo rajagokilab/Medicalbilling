@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kani Medicals - Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Ensure html and body take full height */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            background-color: #f0f4f8; /* Light gray background */
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Sidebar specific styles */
+        .sidebar {
+            background-color: #2A8FF7; /* Updated sidebar background color */
+            min-width: 250px;
+            max-width: 250px;
+            height: 100vh;
+            position: fixed; /* Changed to fixed for consistent behavior across pages */
+            left: 0;
+            top: 0;
+            padding: 1.5rem;
+            color: #e2e8f0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            z-index: 50; /* Ensure sidebar is above other content */
+        }
+        .sidebar-logo { /* Added for consistent logo styling */
+            margin-bottom: 2rem;
+        }
+        .sidebar-logo span { /* Added for consistent logo text styling */
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-left: 0.75rem;
+            color: #ffffff; /* Logo text color */
+        }
+        .sidebar-nav {
+            width: 100%;
+        }
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        /* Styling for active/hover states of sidebar items */
+        .sidebar-nav-item:hover {
+            background-color: #007bff; /* A slightly darker blue for hover */
+            color: #ffffff;
+        }
+        .sidebar-nav-item.active { /* Active item style */
+            background-color: #e2e8f0; /* Light gray background for active */
+            color: #000000; /* Black text for active */
+        }
+        .sidebar-nav-item i { /* For Font Awesome icons */
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: 250px; /* Offset for the fixed sidebar */
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Mobile sidebar toggle button */
+        #mobile-sidebar-toggle {
+            display: none; /* Hide by default on desktop */
+        }
+
+        @media (max-width: 767px) { /* Adjust for mobile view */
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            .sidebar.active { /* Class to show sidebar on mobile */
+                transform: translateX(0%);
+            }
+            .main-content {
+                margin-left: 0; /* No offset on mobile */
+            }
+            #mobile-sidebar-toggle {
+                display: block; /* Show toggle button on mobile */
+            }
+        }
+
+        .error-message {
+            color: #ef4444; /* Tailwind red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem; /* mt-1 */
+        }
+    </style>
+</head>
+<body>
+
+    <button id="mobile-sidebar-toggle" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md shadow-lg">
+        <i class="fas fa-bars text-xl"></i> <!-- Changed to Font Awesome bars icon -->
+    </button>
+
+    <aside id="sidebar" class="sidebar">
+        <div class="p-4 py-8">
+            <div class="sidebar-logo flex items-center space-x-2 mb-8 px-4">
+                <!-- Reverted to text logo as per consistent design -->
+                <span class="text-2xl font-bold">Kani Medicals</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="sidebar-nav-item">
+                        <a href="overview.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item active">
+                        <a href="package.html" class="flex items-center w-full h-full">
+                            <i class="fas fa-box-open"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="billing.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Billing</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="invoice.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-receipt"></i>
+                            <span>Invoice</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="main-content flex flex-col">
+        <div class="md:hidden h-16"></div>
+
+        <div style="background-color: #EDFEFA" class=" p-6 sm:p-8 rounded-xl shadow-md max-w-4xl w-full mx-auto mb-8">
+            <form id="product-form" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="batch-no" class="block text-gray-700 text-sm font-medium mb-2">Batch No <span class="text-red-500">*</span></label>
+                    <input type="text" id="batch-no" name="batch-no"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="batch-no-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="product-name" class="block text-gray-700 text-sm font-medium mb-2">Product Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="product-name" name="product-name"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="product-name-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="item-description" class="block text-gray-700 text-sm font-medium mb-2">Item Description <span class="text-red-500">*</span></label>
+                    <input type="text" id="item-description" name="item-description"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="item-description-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="quantity" class="block text-gray-700 text-sm font-medium mb-2">Quantity <span class="text-red-500">*</span></label>
+                    <input type="number" id="quantity" name="quantity" min="0"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="quantity-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="price" class="block text-gray-700 text-sm font-medium mb-2">Price <span class="text-red-500">*</span></label>
+                    <input type="number" id="price" name="price" step="0.01" min="0"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="price-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="expiry-date" class="block text-gray-700 text-sm font-medium mb-2">Expiry Date <span class="text-red-500">*</span></label>
+                    <input type="date" id="expiry-date" name="expiry-date"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="expiry-date-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="stock" class="block text-gray-700 text-sm font-medium mb-2">Stock <span class="text-red-500">*</span></label>
+                    <input type="number" id="stock" name="stock" min="0"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="stock-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="mrp" class="block text-gray-700 text-sm font-medium mb-2">MRP <span class="text-red-500">*</span></label>
+                    <input type="number" id="mrp" name="mrp" step="0.01" min="0"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="mrp-error" class="error-message hidden"></p>
+                </div>
+
+                <div>
+                    <label for="hsn" class="block text-gray-700 text-sm font-medium mb-2">HSN <span class="text-red-500">*</span></label>
+                    <input type="text" id="hsn" name="hsn"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <p id="hsn-error" class="error-message hidden"></p>
+                </div>
+
+                <div class="md:col-span-3 flex justify-end mt-4">
+                    <button type="button" id="add-new-button"
+                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fas fa-plus-circle text-xl mr-2"></i> Add New <!-- Changed to Font Awesome icon -->
+                    </button>
+                </div>
+
+                <div class="md:col-span-3 text-center mt-8">
+                    <button type="submit"
+                             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Submit
+                    </button>
+                </div>
+            </form>
+
+            <div id="product-message-box" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+                <div style="background-color: #EDFEFA" class="p-8 rounded-lg shadow-xl text-center max-w-sm w-full">
+                    <h3 id="product-message-title" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+                    <p id="product-message-content" class="text-gray-600 mb-6"></p>
+                    <button id="close-product-message-box" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div style="background-color: #EDFEFA" class="p-6 sm:p-8 rounded-xl shadow-md max-w-4xl w-full mx-auto mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Added Products</h2>
+            <div id="product-list-container" class="overflow-x-auto">
+                </div>
+            <p id="no-products-message" class="text-gray-500 text-center mt-4 hidden">No products added yet.</p>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+
+        // Toggle sidebar visibility on mobile
+        mobileSidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active'); // Use 'active' class for mobile visibility
+        });
+
+        // Hide sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            // Only hide if sidebar is currently visible on mobile and click is outside sidebar and toggle button
+            if (window.innerWidth < 768 && sidebar.classList.contains('active') && !sidebar.contains(event.target) && !mobileSidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Form Validation and Submission
+        const productForm = document.getElementById('product-form');
+        const productMessageBox = document.getElementById('product-message-box');
+        const productMessageTitle = document.getElementById('product-message-title');
+        const productMessageContent = document.getElementById('product-message-content');
+        const closeProductMessageBoxButton = document.getElementById('close-product-message-box');
+        const addNewButton = document.getElementById('add-new-button'); // Get the Add New button
+        const productListContainer = document.getElementById('product-list-container');
+        const noProductsMessage = document.getElementById('no-products-message');
+
+
+        // Get input elements and their error message paragraphs
+        const batchNoInput = document.getElementById('batch-no');
+        const batchNoError = document.getElementById('batch-no-error');
+        const productNameInput = document.getElementById('product-name');
+        const productNameError = document.getElementById('product-name-error');
+        const itemDescriptionInput = document.getElementById('item-description');
+        const itemDescriptionError = document.getElementById('item-description-error');
+        const quantityInput = document.getElementById('quantity');
+        const quantityError = document.getElementById('quantity-error');
+        const priceInput = document.getElementById('price');
+        const priceError = document.getElementById('price-error');
+        const expiryDateInput = document.getElementById('expiry-date');
+        const expiryDateError = document.getElementById('expiry-date-error');
+        const stockInput = document.getElementById('stock');
+        const stockError = document.getElementById('stock-error');
+        const mrpInput = document.getElementById('mrp');
+        const mrpError = document.getElementById('mrp-error');
+        const hsnInput = document.getElementById('hsn');
+        const hsnError = document.getElementById('hsn-error');
+
+        // Function to display an error message
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        // Function to hide an error message
+        function hideError(element) {
+            element.classList.add('hidden');
+        }
+
+        // Function to validate if a value is a positive number
+        function isPositiveNumber(value) {
+            return !isNaN(value) && parseFloat(value) >= 0;
+        }
+
+        // Function to save products to local storage
+        function saveProducts(products) {
+            localStorage.setItem('kaniMedicalsProducts', JSON.stringify(products));
+        }
+
+        // Function to load products from local storage
+        function loadProducts() {
+            const storedProducts = localStorage.getItem('kaniMedicalsProducts');
+            return storedProducts ? JSON.parse(storedProducts) : [];
+        }
+
+        // Function to render products in the display area
+        function renderProducts() {
+            const products = loadProducts();
+            productListContainer.innerHTML = ''; // Clear previous content
+
+            if (products.length === 0) {
+                noProductsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noProductsMessage.classList.add('hidden');
+            }
+
+            // Create table structure
+            const table = document.createElement('table');
+            table.classList.add('min-w-full', 'bg-white', 'rounded-lg', 'shadow-sm', 'overflow-hidden');
+
+            // Create table header
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr class="bg-blue-600 text-white text-left">
+                    <th class="py-3 px-4 uppercase font-semibold text-sm rounded-tl-lg">Batch No</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Product Name</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Description</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Quantity</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Price</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Expiry Date</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">Stock</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm">MRP</th>
+                    <th class="py-3 px-4 uppercase font-semibold text-sm rounded-tr-lg">HSN</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.classList.add('border-b', 'border-gray-200', 'hover:bg-gray-50');
+                row.innerHTML = `
+                    <td class="py-3 px-4 text-gray-700">${product['batch-no']}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['product-name']}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['item-description']}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['quantity']}</td>
+                    <td class="py-3 px-4 text-gray-700">$${parseFloat(product['price']).toFixed(2)}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['expiry-date']}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['stock']}</td>
+                    <td class="py-3 px-4 text-gray-700">$${parseFloat(product['mrp']).toFixed(2)}</td>
+                    <td class="py-3 px-4 text-gray-700">${product['hsn']}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            productListContainer.appendChild(table);
+        }
+
+        productForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let isValid = true; // Flag to track overall form validity
+
+            // Validation logic for all fields...
+            if (batchNoInput.value.trim() === '') {
+                showError(batchNoError, 'Batch No is required.');
+                isValid = false;
+            } else {
+                hideError(batchNoError);
+            }
+
+            if (productNameInput.value.trim() === '') {
+                showError(productNameError, 'Product Name is required.');
+                isValid = false;
+            } else {
+                hideError(productNameError);
+            }
+
+            if (itemDescriptionInput.value.trim() === '') {
+                showError(itemDescriptionError, 'Item Description is required.');
+                isValid = false;
+            } else {
+                hideError(itemDescriptionError);
+            }
+
+            if (quantityInput.value.trim() === '' || !isPositiveNumber(quantityInput.value)) {
+                showError(quantityError, 'Valid quantity is required.');
+                isValid = false;
+            } else {
+                hideError(quantityError);
+            }
+
+            if (priceInput.value.trim() === '' || !isPositiveNumber(priceInput.value)) {
+                showError(priceError, 'Valid price is required.');
+                isValid = false;
+            } else {
+                hideError(priceError);
+            }
+
+            if (expiryDateInput.value.trim() === '') {
+                showError(expiryDateError, 'Expiry Date is required.');
+                isValid = false;
+            } else {
+                hideError(expiryDateError);
+            }
+
+            if (stockInput.value.trim() === '' || !isPositiveNumber(stockInput.value)) {
+                showError(stockError, 'Valid stock is required.');
+                isValid = false;
+            } else {
+                hideError(stockError);
+            }
+
+            if (mrpInput.value.trim() === '' || !isPositiveNumber(mrpInput.value)) {
+                showError(mrpError, 'Valid MRP is required.');
+                isValid = false;
+            } else {
+                hideError(mrpError);
+            }
+
+            if (hsnInput.value.trim() === '') {
+                showError(hsnError, 'HSN is required.');
+                isValid = false;
+            } else {
+                hideError(hsnError);
+            }
+
+            // If all validations pass, proceed with form submission logic
+            if (isValid) {
+                const formData = new FormData(productForm);
+                const newProduct = {};
+                formData.forEach((value, key) => {
+                    newProduct[key] = value;
+                });
+
+                // Load existing products, add new one, and save
+                const products = loadProducts();
+                products.push(newProduct);
+                saveProducts(products);
+
+                console.log('Product Form Submitted and Saved:', newProduct);
+                console.log('All Products in Local Storage:', products);
+
+                // Show the message box
+                showProductMessageBox('Product Added!', 'The product details have been successfully added and saved to local storage.');
+                productForm.reset(); // Clear the form fields after successful submission
+            } else {
+                console.log('Form validation failed. Not saving product.');
+            }
+            // Always navigate to product.html regardless of validation success or failure
+            window.location.href = 'product.html';
+        });
+
+        // Event listener for closing the message box
+        closeProductMessageBoxButton.addEventListener('click', () => {
+            productMessageBox.classList.add('hidden');
+        });
+
+        // Function to show the custom product message box
+        function showProductMessageBox(title, content) {
+            productMessageTitle.textContent = title;
+            productMessageContent.textContent = content;
+            productMessageBox.classList.remove('hidden');
+        }
+
+        // Modify the "Add New" button functionality to submit the form
+        addNewButton.addEventListener('click', () => {
+            // Programmatically trigger the form's submit event
+            productForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        });
+
+        // Initial render of products when the page loads (still needed for initial display if user doesn't submit)
+        document.addEventListener('DOMContentLoaded', renderProducts);
+    </script>
+
+</body>
+</html>

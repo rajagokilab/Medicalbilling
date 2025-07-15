@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kani Medical Invoice</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- html2pdf.js CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            background-color: #f0f2f5; /* Light grey background */
+            display: flex; /* Use flexbox for sidebar and main content */
+            min-height: 100vh;
+            margin: 0;
+            padding: 0; /* Remove body padding as content will have it */
+            box-sizing: border-box;
+        }
+        .sidebar {
+            background-color: #2A8FF7; /* Updated sidebar background color */
+            min-width: 250px;
+            max-width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 1.5rem;
+            color: #e2e8f0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+        }
+        .sidebar-logo {
+            margin-bottom: 2rem;
+        }
+        .sidebar-logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 9999px; /* Full rounded */
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        .sidebar-logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-left: 0.75rem;
+        }
+        .sidebar-nav {
+            width: 100%;
+        }
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        /* Styling for active/hover states of sidebar items */
+        .sidebar-nav-item:hover {
+            background-color: #007bff; /* A slightly darker blue for hover */
+            color: #ffffff;
+        }
+        .sidebar-nav-item.active { /* Active item style */
+            background-color: #e2e8f0; /* Light gray background for active */
+            color: #000000; /* Black text for active */
+        }
+        .sidebar-nav-item i { /* For Font Awesome icons */
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        .main-content {
+            flex-grow: 1; /* Main content takes remaining space */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Padding for the main content area */
+            box-sizing: border-box;
+            margin-left: 250px; /* Offset for the fixed sidebar */
+        }
+        .invoice-container {
+            background-color: #EDFEFA;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            padding: 2.5rem; /* Increased padding */
+            box-sizing: border-box;
+            position: relative; /* For the background elements */
+            overflow: hidden; /* Hide overflow of background elements */
+        }
+
+        /* Background shapes */
+        .bg-shape-top {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(to right, #20c997, #17a2b8); /* Green to blue gradient */
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        .bg-shape-bottom {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(to right, #20c997, #17a2b8); /* Green to blue gradient */
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .invoice-header, .invoice-details, .invoice-table, .invoice-summary, .invoice-footer {
+            position: relative;
+            z-index: 1; /* Ensure content is above background shapes */
+        }
+
+        .invoice-table th, .invoice-table td {
+            padding: 0.75rem 1rem; /* Adjust padding for table cells */
+            text-align: left;
+        }
+        .invoice-table th {
+            background-color: #2196f3; /* Blue background for header */
+            color: #fff; /* White text for header */
+            font-weight: 600;
+            border-bottom: none; /* Remove bottom border */
+        }
+        .invoice-table thead tr {
+            border-radius: 0.5rem; /* Apply rounded corners to the header row */
+            overflow: hidden; /* Ensure rounded corners are visible */
+            background-color: #2196f3; /* Match header background */
+        }
+        /* Specific rounded corners for first and last header cells */
+        .invoice-table th:first-child {
+            border-top-left-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem; /* Also for bottom left for the header row */
+        }
+        .invoice-table th:last-child {
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem; /* Also for bottom right for the header row */
+        }
+
+        .invoice-table tr:nth-child(even) {
+            background-color: #f8f9fa; /* Light grey for even rows */
+        }
+        .invoice-table tr:hover {
+            background-color: #e2f2f7; /* Hover effect */
+        }
+
+        /* Styling for the Discount and Total sections */
+        .invoice-summary .discount-row,
+        .invoice-summary .total-row {
+            background-color: #e0f7fa; /* Light blue background */
+            border-radius: 0.5rem; /* Rounded corners */
+            padding: 0.75rem 1.25rem; /* Padding */
+            margin-bottom: 0.5rem; /* Space between rows */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .invoice-summary .total-row {
+            background-color: #2196f3; /* Blue background for total */
+            color: #fff; /* White text for total */
+            font-weight: bold;
+            font-size: 1.25rem;
+            padding: 1rem 1.5rem;
+        }
+        .invoice-summary .total-row span:last-child {
+            font-size: 1.5rem; /* Larger font for the total amount */
+        }
+
+        /* Styles for the buttons within the invoice container */
+        .invoice-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem; /* Add some space above the buttons */
+            padding: 1rem; /* Add padding inside the button container */
+            border-top: 1px solid #e2e8f0; /* Light border at the top */
+            background-color: #fff; /* White background */
+            border-radius: 0 0 1rem 1rem; /* Rounded corners only at the bottom */
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+                display: block;
+            }
+            .sidebar {
+                display: none; /* Hide sidebar when printing */
+            }
+            .main-content {
+                padding: 0;
+            }
+            .invoice-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+                padding: 0;
+            }
+            .invoice-buttons {
+                display: none; /* Hide buttons when printing */
+            }
+            .bg-shape-top, .bg-shape-bottom {
+                display: none; /* Hide background shapes when printing */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar flex flex-col">
+        <div class="text-2xl font-bold text-white mb-8">Kani Medicals</div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="sidebar-nav-item">
+                    <a href="overview.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-tachometer-alt"></i> <!-- Font Awesome icon -->
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="package.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-box-open"></i> <!-- Font Awesome icon -->
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="billing.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-file-invoice-dollar"></i> <!-- Font Awesome icon -->
+                        <span>Billing</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item active">
+                    <a href="invoice.html" class="flex items-center w-full h-full">
+                        <i class="fas fa-receipt"></i> <!-- Font Awesome icon -->
+                        <span>Invoice</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="invoice-container">
+            <!-- Background shapes -->
+            <div class="bg-shape-top"></div>
+            <div class="bg-shape-bottom"></div>
+
+            <!-- Invoice Header -->
+            <div class="invoice-header flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <img src="https://placehold.co/60x60/17a2b8/ffffff?text=KM" alt="Kani Medical Logo" class="w-16 h-16 rounded-full mr-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-blue-800" id="companyNameHeader">Kani Medicals</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4" id="invoiceCompanyName">Kani Medical</h2>
+                <p class="text-gray-600 text-sm" id="companyAddress">
+                    <!-- Company address will be loaded here -->
+                </p>
+                <p class="text-gray-600 text-sm flex items-center mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span id="companyPhone"></span>
+                </p>
+            </div>
+
+            <!-- Invoice Details -->
+            <div class="invoice-details grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 p-4 bg-blue-50 rounded-lg">
+                <div>
+                    <p class="text-gray-700 font-medium mb-1">Invoice To</p>
+                    <p class="text-gray-800 text-lg font-semibold" id="customerName"></p>
+                    <p class="text-gray-600 text-sm" id="customerAddress"></p>
+                    <p class="text-gray-600 text-sm" id="customerPhone"></p>
+                </div>
+                <div class="md:text-right">
+                    <p class="text-gray-700 font-medium mb-1">Invoice No : <span class="font-semibold text-gray-800" id="invoiceNumber"></span></p>
+                    <p class="text-gray-700 font-medium mb-1">Date : <span class="font-semibold text-gray-800" id="invoiceDate"></span></p>
+                    <p class="text-gray-700 font-medium">DL No : <span class="font-semibold text-gray-800" id="dlNumber"></span></p>
+                </div>
+            </div>
+
+            <!-- Item Table -->
+            <div class="invoice-table overflow-x-auto mb-8">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <thead>
+                        <tr>
+                            <th class="py-3 px-4">S.no</th>
+                            <th class="py-3 px-4">Item Summary</th>
+                            <th class="py-3 px-4">Batch No</th>
+                            <th class="py-3 px-4">Expiry Date</th>
+                            <th class="py-3 px-4">Price</th>
+                            <th class="py-3 px-4">Quantity</th>
+                            <th class="py-3 px-4">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceItemsBody">
+                        <!-- Invoice items will be loaded here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="invoice-summary flex flex-col items-end mb-8">
+                <div class="w-full md:w-1/2 lg:w-1/3">
+                    <div class="discount-row">
+                        <span class="text-gray-700 font-medium">Discount</span>
+                        <span class="text-green-600 font-semibold" id="invoiceDiscount"></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span id="invoiceTotal"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Message -->
+            <div class="invoice-footer text-center text-gray-600 text-sm mt-8 p-4 bg-blue-50 rounded-lg">
+                <p id="footerMessage"></p>
+            </div>
+
+            <!-- Print and Download Buttons (now inside the invoice container) -->
+            <div class="invoice-buttons">
+                <button id="printButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m0 0v3a2 2 0 002 2h6a2 2 0 002-2v-3M17 17H7m0 0v4a2 2 0 002 2h6a2 2 0 002-2v-4m-6 0H9" />
+                    </svg>
+                    Print
+                </button>
+                <button id="downloadButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default invoice data (empty or placeholder values)
+        const defaultInvoiceData = {
+            company: {
+                name: "Kani Medicals",
+                address: "10/95, Kani Medical, Kamarajar Street, Kumbalaperi Vilakku, Pavoorchatram.",
+                phone: "8900278569"
+            },
+            customer: {
+                name: "",
+                address: "",
+                phone: ""
+            },
+            invoice: {
+                number: "",
+                date: "",
+                dlNumber: "TN-14-20-00404",
+                discount: "0.00",
+                total: "0.00"
+            },
+            items: [], // Empty array for items
+            footerMessage: "Thank you for your business!"
+        };
+
+        // Function to load invoice data from localStorage or use default
+        function loadInvoiceData() {
+            let invoiceData = localStorage.getItem('kaniMedicalInvoice');
+            if (invoiceData) {
+                return JSON.parse(invoiceData);
+            } else {
+                // If no data in localStorage, save default data and return it
+                localStorage.setItem('kaniMedicalInvoice', JSON.stringify(defaultInvoiceData));
+                return defaultInvoiceData;
+            }
+        }
+
+        // Function to render the invoice data to the HTML
+        function renderInvoice(data) {
+            // Company Details
+            document.getElementById('companyNameHeader').textContent = data.company.name || 'Kani Medicals';
+            document.getElementById('invoiceCompanyName').textContent = data.company.name || 'Kani Medical';
+            document.getElementById('companyAddress').innerHTML = data.company.address ? data.company.address.replace(/\n/g, '<br>') : '';
+            document.getElementById('companyPhone').textContent = data.company.phone ? `Phone- ${data.company.phone}` : '';
+
+            // Customer and Invoice Details
+            document.getElementById('customerName').textContent = data.customer.name || '';
+            document.getElementById('customerAddress').textContent = data.customer.address || '';
+            document.getElementById('customerPhone').textContent = data.customer.phone ? `Phone- ${data.customer.phone}` : '';
+            document.getElementById('invoiceNumber').textContent = data.invoice.number || '';
+            document.getElementById('invoiceDate').textContent = data.invoice.date || '';
+            document.getElementById('dlNumber').textContent = data.invoice.dlNumber || '';
+
+            // Invoice Items
+            const invoiceItemsBody = document.getElementById('invoiceItemsBody');
+            invoiceItemsBody.innerHTML = ''; // Clear existing rows
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-3 px-4 border-b border-gray-200">${item.sNo || ''}.</td>
+                        <td class="py-3 px-4 border-b border-gray-200">${item.summary || ''}</td>
+                        <td class="py-3 px-4 border-b border-gray-200">${item.batchNo || ''}</td>
+                        <td class="py-3 px-4 border-b border-gray-200">${item.expiryDate || ''}</td>
+                        <td class="py-3 px-4 border-b border-gray-200">$${item.price !== undefined ? item.price.toFixed(2) : ''}</td>
+                        <td class="py-3 px-4 border-b border-gray-200">${item.quantity !== undefined ? item.quantity : ''}</td>
+                        <td class="py-3 px-4 border-b border-gray-200">$${item.total !== undefined ? item.total.toFixed(2) : ''}</td>
+                    `;
+                    invoiceItemsBody.appendChild(row);
+                });
+            } else {
+                // Add a message if no items
+                const noItemsRow = document.createElement('tr');
+                noItemsRow.innerHTML = `
+                    <td colspan="7" class="py-3 px-4 text-center text-gray-500">No items to display.</td>
+                `;
+                invoiceItemsBody.appendChild(noItemsRow);
+            }
+
+
+            // Summary
+            document.getElementById('invoiceDiscount').textContent = data.invoice.discount ? `$${parseFloat(data.invoice.discount).toFixed(2)}` : '$0.00';
+            document.getElementById('invoiceTotal').textContent = data.invoice.total ? `$${parseFloat(data.invoice.total).toFixed(2)}` : '$0.00';
+
+            // Footer
+            document.getElementById('footerMessage').textContent = data.footerMessage || '';
+        }
+
+        // Event listeners for buttons
+        document.getElementById('printButton').addEventListener('click', function() {
+            window.print();
+        });
+
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            const invoiceContainer = document.querySelector('.invoice-container');
+            const options = {
+                margin: 1,
+                filename: 'kani-medical-invoice.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Use html2pdf to generate and download the PDF
+            html2pdf().from(invoiceContainer).set(options).save();
+        });
+
+        // Load and render invoice data when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const invoiceData = loadInvoiceData();
+            renderInvoice(invoiceData);
+        });
+    </script>
+</body>
+</html>

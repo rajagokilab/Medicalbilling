@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kani Medicals - Product List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Ensure html and body take full height */
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            background-color: #f0f4f8; /* Light gray background */
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+            border-radius: 10px;
+        }
+
+        /* Sidebar specific styles */
+        .sidebar {
+            background-color: #2A8FF7; /* Updated sidebar background color */
+            min-width: 250px;
+            max-width: 250px;
+            height: 100vh;
+            position: fixed; /* Changed to fixed for consistent behavior across pages */
+            left: 0;
+            top: 0;
+            padding: 1.5rem;
+            color: #e2e8f0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            z-index: 50; /* Ensure sidebar is above other content */
+        }
+        .sidebar-logo { /* Added for consistent logo styling */
+            margin-bottom: 2rem;
+        }
+        .sidebar-logo span { /* Added for consistent logo text styling */
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-left: 0.75rem;
+            color: #ffffff; /* Logo text color */
+        }
+        .sidebar-nav {
+            width: 100%;
+        }
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        /* Styling for active/hover states of sidebar items */
+        .sidebar-nav-item:hover {
+            background-color: #007bff; /* A slightly darker blue for hover */
+            color: #ffffff;
+        }
+        .sidebar-nav-item.active { /* Active item style */
+            background-color: #e2e8f0; /* Light gray background for active */
+            color: #000000; /* Black text for active */
+        }
+        .sidebar-nav-item i { /* For Font Awesome icons */
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: 250px; /* Offset for the fixed sidebar */
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Mobile sidebar toggle button */
+        #mobile-sidebar-toggle {
+            display: none; /* Hide by default on desktop */
+        }
+
+        @media (max-width: 767px) { /* Adjust for mobile view */
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            .sidebar.active { /* Class to show sidebar on mobile */
+                transform: translateX(0%);
+            }
+            .main-content {
+                margin-left: 0; /* No offset on mobile */
+            }
+            #mobile-sidebar-toggle {
+                display: block; /* Show toggle button on mobile */
+            }
+        }
+
+        /* Table specific styles for the product list */
+        .product-table th, .product-table td {
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            text-align: left;
+        }
+
+        .product-table th {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            font-weight: 600; /* font-semibold */
+            font-size: 0.875rem; /* text-sm */
+            text-transform: uppercase;
+        }
+
+        .product-table tbody tr {
+            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+        }
+
+        .product-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .product-table tbody tr:hover {
+            background-color: #f9fafb; /* hover:bg-gray-50 */
+        }
+
+        .cart-icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #eff6ff; /* blue-50 */
+            color: #3b82f6; /* blue-500 */
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .cart-icon-button:hover {
+            background-color: #dbeafe; /* blue-100 */
+            transform: scale(1.05);
+        }
+        .cart-icon-button svg {
+            width: 20px; /* Equivalent to text-xl for icons */
+            height: 20px;
+            fill: currentColor; /* Inherit color from parent */
+        }
+    </style>
+</head>
+<body>
+
+    <button id="mobile-sidebar-toggle" class="md:hidden fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md shadow-lg">
+        <i class="fas fa-bars text-xl"></i> <!-- Changed to Font Awesome bars icon -->
+    </button>
+
+    <aside id="sidebar" class="sidebar">
+        <div class="p-4 py-8">
+            <div class="sidebar-logo flex items-center space-x-2 mb-8 px-4">
+                <span class="text-2xl font-bold">Kani Medicals</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="sidebar-nav-item">
+                        <a href="overview.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item active">
+                        <a href="product.html" class="flex items-center w-full h-full">
+                            <i class="fas fa-box-open"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="billing.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Billing</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="invoice.html" class="flex items-center w-full h-full text-white">
+                            <i class="fas fa-receipt"></i>
+                            <span>Invoice</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="main-content flex flex-col">
+        <div class="md:hidden h-16"></div>
+
+        <div style="background-color: #EDFEFA" class="p-6 sm:p-8 rounded-xl shadow-md max-w-4xl w-full mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                <div class="relative w-full sm:w-2/3 mb-4 sm:mb-0">
+                    <input type="text" id="search-input" placeholder="Search"
+                           class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <i class="fas fa-search text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-lg"></i> <!-- Changed to Font Awesome icon -->
+                </div>
+                <button id="create-new-button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto">
+                    <i class="fas fa-plus-circle text-xl mr-2"></i> Create New <!-- Changed to Font Awesome icon -->
+                </button>
+            </div>
+
+            <div id="product-list-table-container" class="overflow-x-auto rounded-lg shadow-md">
+                <table id="product-list-table" class="min-w-full product-table">
+                    <thead>
+                        <tr>
+                            <th class="rounded-tl-lg">S.no</th>
+                            <th>Product Name</th>
+                            <th>Batch No</th>
+                            <th>Expiry Date</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th class="rounded-tr-lg">Cart</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Product rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+                <p id="no-products-message" class="text-gray-500 text-center py-8 hidden">No products found.</p>
+            </div>
+
+            <div class="flex justify-center mt-8">
+                <button id="view-cart-button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    View Cart
+                </button>
+            </div>
+        </div>
+
+        <!-- Message Box (reused from previous immersive) -->
+        <div id="product-message-box" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm w-full">
+                <h3 id="product-message-title" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+                <p id="product-message-content" class="text-gray-600 mb-6"></p>
+                <button id="close-product-message-box" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        const searchInput = document.getElementById('search-input');
+        const productListTableBody = document.querySelector('#product-list-table tbody');
+        const noProductsMessage = document.getElementById('no-products-message');
+        const createNewButton = document.getElementById('create-new-button');
+        // Renamed from addToCartButton to viewCartButton for clarity
+        const viewCartButton = document.getElementById('view-cart-button'); 
+
+        // Message box elements (reused)
+        const productMessageBox = document.getElementById('product-message-box');
+        const productMessageTitle = document.getElementById('product-message-title');
+        const productMessageContent = document.getElementById('product-message-content');
+        const closeProductMessageBoxButton = document.getElementById('close-product-message-box');
+
+        // Function to show the custom message box
+        function showMessageBox(title, content) {
+            productMessageTitle.textContent = title;
+            productMessageContent.textContent = content;
+            productMessageBox.classList.remove('hidden');
+        }
+
+        // Event listener for closing the message box
+        closeProductMessageBoxButton.addEventListener('click', () => {
+            productMessageBox.classList.add('hidden');
+        });
+
+        // Toggle sidebar visibility on mobile
+        mobileSidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active'); // Use 'active' class for mobile visibility
+        });
+
+        // Hide sidebar when clicking outside on mobile
+        document.addEventListener('click', (event) => {
+            if (window.innerWidth < 768 && sidebar.classList.contains('active') && !sidebar.contains(event.target) && !mobileSidebarToggle.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Function to load products from local storage
+        function loadProducts() {
+            const storedProducts = localStorage.getItem('kaniMedicalsProducts');
+            return storedProducts ? JSON.parse(storedProducts) : [];
+        }
+
+        // Function to load cart items from local storage
+        function loadCartItems() {
+            const storedCartItems = localStorage.getItem('kaniMedicalsCartItems');
+            return storedCartItems ? JSON.parse(storedCartItems) : [];
+        }
+
+        // Function to save cart items to local storage
+        function saveCartItems(items) {
+            localStorage.setItem('kaniMedicalsCartItems', JSON.stringify(items));
+        }
+
+        // Function to render products in the table
+        function renderProducts(searchTerm = '') {
+            const products = loadProducts();
+            productListTableBody.innerHTML = ''; // Clear previous content
+            let serialNumber = 1;
+
+            const filteredProducts = products.filter(product => {
+                const searchLower = searchTerm.toLowerCase();
+                return product['product-name'].toLowerCase().includes(searchLower) ||
+                       product['batch-no'].toLowerCase().includes(searchLower) ||
+                       product['item-description'].toLowerCase().includes(searchLower) ||
+                       product['hsn'].toLowerCase().includes(searchLower);
+            });
+
+            if (filteredProducts.length === 0) {
+                noProductsMessage.classList.remove('hidden');
+                return;
+            } else {
+                noProductsMessage.classList.add('hidden');
+            }
+
+            filteredProducts.forEach(product => {
+                const row = document.createElement('tr');
+                // Add a data attribute to the row to store the product's unique identifier (e.g., batch-no)
+                row.dataset.batchNo = product['batch-no'];
+                row.innerHTML = `
+                    <td>${serialNumber++}.</td>
+                    <td>${product['product-name']}</td>
+                    <td>${product['batch-no']}</td>
+                    <td>${product['expiry-date']}</td>
+                    <td>$${parseFloat(product['price']).toFixed(2)}</td>
+                    <td>${product['stock'] > 0 ? 'In Stock' : 'Out of Stock'}</td>
+                    <td>
+                        <button class="cart-icon-button" 
+                                data-batch-no="${product['batch-no']}" 
+                                data-product-name="${product['product-name']}" 
+                                data-price="${product['price']}"
+                                data-expiry-date="${product['expiry-date']}">
+                            <i class="fas fa-cart-plus"></i> <!-- Changed to Font Awesome cart-plus icon -->
+                        </button>
+                    </td>
+                `;
+                productListTableBody.appendChild(row);
+            });
+        }
+
+        // Event delegation for cart buttons: Attach listener to the table body
+        // This ensures that even dynamically added buttons will trigger the event,
+        // and prevents duplicate listeners.
+        productListTableBody.addEventListener('click', (event) => {
+            // Check if the clicked element or its parent is a cart-icon-button
+            const button = event.target.closest('.cart-icon-button');
+            if (button) {
+                const batchNo = button.dataset.batchNo;
+                const productName = button.dataset.productName;
+                const price = parseFloat(button.dataset.price);
+                const expiryDate = button.dataset.expiryDate; // Get expiry date from data attribute
+
+                let cartItems = loadCartItems();
+                const existingItemIndex = cartItems.findIndex(item => item['batch-no'] === batchNo);
+
+                if (existingItemIndex > -1) {
+                    // If item exists, increment quantity
+                    cartItems[existingItemIndex].quantity = parseInt(cartItems[existingItemIndex].quantity) + 1;
+                } else {
+                    // If item does not exist, add it with quantity 1
+                    cartItems.push({
+                        'batch-no': batchNo,
+                        'item-summary': productName, // Use product name as item summary
+                        'price': price,
+                        'quantity': 1,
+                        'expiry-date': expiryDate // Include expiry date for invoice
+                    });
+                }
+                saveCartItems(cartItems);
+                showMessageBox('Item Added to Cart', `${productName} (Batch: ${batchNo}) has been added to your cart.`);
+                console.log('Current Cart:', loadCartItems());
+            }
+        });
+
+        // Event listener for search input
+        searchInput.addEventListener('input', (event) => {
+            renderProducts(event.target.value);
+        });
+
+        // Event listener for "Create New" button
+        createNewButton.addEventListener('click', () => {
+            // Navigate to the package.html (product creation form)
+            window.location.href = 'package.html';
+        });
+
+        // Event listener for "View Cart" button (renamed from "Add To Cart")
+        viewCartButton.addEventListener('click', () => {
+            // This button now navigates to the billing page to see the cart
+            window.location.href = 'billing.html';
+        });
+
+        // Initial render of products when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+        });
+    </script>
+
+</body>
+</html>

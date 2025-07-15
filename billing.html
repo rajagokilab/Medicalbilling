@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kani Medicals - Invoice</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom styles if needed, though Tailwind should cover most */
+        body {
+            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            background-color: #f0f2f5; /* Light grey background */
+        }
+        .sidebar {
+            background-color: #2A8FF7; /* Updated sidebar background color */
+            min-width: 250px;
+            max-width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 1.5rem;
+            color: #e2e8f0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        /* Styling for active/hover states of sidebar items */
+        .sidebar-item:hover {
+            background-color: #007bff; /* A slightly darker blue for hover */
+            color: #ffffff;
+        }
+        .sidebar-item.active { /* Active item style */
+            background-color: #e2e8f0; /* Light gray background for active */
+            color: #000000; /* Black text for active */
+        }
+        .sidebar-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        .main-content {
+            margin-left: 250px; /* Offset for the fixed sidebar */
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+        .card {
+            background-color: #EDFEFA; /* Updated card background color */
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        input[type="text"], input[type="date"], input[type="number"] {
+            border: 1px solid #cbd5e0; /* Light grey border */
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #4299e1; /* Blue focus border */
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue focus ring */
+        }
+        .btn-primary {
+            background-color: #4299e1; /* Blue */
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #3182ce; /* Darker blue on hover */
+        }
+        .table-header th {
+            background-color: #4299e1; /* Blue */
+            color: #ffffff;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .table-row td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0; /* Light grey border */
+        }
+        .table-row:last-child td {
+            border-bottom: none;
+        }
+        .required-star {
+            color: #ef4444; /* Red for required fields */
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar flex flex-col">
+        <div class="text-2xl font-bold text-white mb-8">Kani Medicals</div>
+        <nav class="flex-grow">
+            <ul>
+                <li class="sidebar-item">
+                    <a href="overview.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="package.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="sidebar-item active">
+                    <a href="billing.html" class="flex items-center w-full h-full">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Billing</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="invoice.html" class="flex items-center w-full h-full text-white">
+                        <i class="fas fa-receipt"></i>
+                        <span>Invoice</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content flex-grow">
+        <!-- Header with Search and Create New -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="relative flex items-center w-80">
+                <input type="text" placeholder="Search" class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 w-full">
+                <i class="fas fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <button class="btn-primary flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Create New
+            </button>
+        </div>
+
+        <!-- Invoice Form Card -->
+        <div class="card">
+            <h2 class="text-2xl font-semibold mb-6">Invoice</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label for="invoiceDate" class="block text-gray-700 text-sm font-bold mb-2">Invoice Date <span class="required-star">*</span>:</label>
+                    <div class="relative">
+                        <input type="date" id="invoiceDate" name="invoiceDate" class="pr-10">
+                        <i class="fas fa-calendar-alt absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label for="dlNo" class="block text-gray-700 text-sm font-bold mb-2">D.L NO <span class="required-star">*</span>:</label>
+                    <input type="text" id="dlNo" name="dlNo" value="TN-14-20-00404">
+                </div>
+                <div>
+                    <label for="invoiceNumber" class="block text-gray-700 text-sm font-bold mb-2">Invoice Number <span class="required-star">*</span>:</label>
+                    <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="Enter Invoice Number">
+                </div>
+                <div>
+                    <label for="licenseNo" class="block text-gray-700 text-sm font-bold mb-2">License NO <span class="required-star">*</span>:</label>
+                    <input type="text" id="licenseNo" name="licenseNo" value="892768067">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Bill From</h3>
+                    <div class="mb-4">
+                        <label for="billFromName" class="block text-gray-700 text-sm font-bold mb-2">Name <span class="required-star">*</span>:</label>
+                        <input type="text" id="billFromName" name="billFromName" value="Kani Medical">
+                    </div>
+                    <div class="mb-4">
+                        <label for="billFromPhone" class="block text-gray-700 text-sm font-bold mb-2">Phone Number <span class="required-star">*</span>:</label>
+                        <input type="text" id="billFromPhone" name="billFromPhone" value="8900278569">
+                    </div>
+                    <div>
+                        <label for="billFromAddress" class="block text-gray-700 text-sm font-bold mb-2">Address <span class="required-star">*</span>:</label>
+                        <textarea id="billFromAddress" name="billFromAddress" rows="4" class="w-full border border-gray-300 rounded-lg p-3 resize-none focus:ring-blue-500 focus:border-blue-500">10/95, Kani Medical, Kamarajar Street, Kumbalaperi Vilakku, Pavoorchatram.</textarea>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Bill To</h3>
+                    <div class="mb-4">
+                        <label for="billToName" class="block text-gray-700 text-sm font-bold mb-2">Name <span class="required-star">*</span>:</label>
+                        <input type="text" id="billToName" name="billToName" placeholder="Enter your Name">
+                    </div>
+                    <div class="mb-4">
+                        <label for="billToPhone" class="block text-gray-700 text-sm font-bold mb-2">Phone Number <span class="required-star">*</span>:</label>
+                        <input type="text" id="billToPhone" name="billToPhone" placeholder="Enter Your Phone Number">
+                    </div>
+                    <div>
+                        <label for="billToAddress" class="block text-gray-700 text-sm font-bold mb-2">Address <span class="required-star">*</span>:</label>
+                        <textarea id="billToAddress" name="billToAddress" rows="4" class="w-full border border-gray-300 rounded-lg p-3 resize-none focus:ring-blue-500 focus:border-blue-500" placeholder="Enter Your Address"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Summary Table -->
+            <h3 class="text-xl font-semibold mb-4">Item Details</h3>
+            <div class="overflow-x-auto mb-6">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                    <thead>
+                        <tr class="table-header">
+                            <th class="rounded-tl-lg">S.no</th>
+                            <th>Item Summary</th>
+                            <th>Batch No</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th class="rounded-tr-lg">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemDetailsTableBody">
+                        <!-- Items will be loaded here from local storage -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Totals and Payment Mode -->
+            <div class="flex flex-col items-end mb-8">
+                <div class="flex justify-between items-center w-full md:w-1/3 mb-4">
+                    <span class="text-lg font-semibold">Total:</span>
+                    <span id="subtotalAmount" class="text-xl font-bold text-blue-600">0.00</span>
+                </div>
+                <div class="flex justify-between items-center w-full md:w-1/3 mb-6">
+                    <span class="text-lg font-semibold">Payment Mode:</span>
+                    <span id="paymentMode" class="text-lg font-bold">Cash</span>
+                </div>
+                <div class="flex justify-between items-center w-full md:w-1/3 p-4 bg-blue-100 rounded-lg">
+                    <span class="text-xl font-bold text-blue-800">Total</span>
+                    <span id="finalTotalAmount" class="text-2xl font-extrabold text-blue-800">0.00</span>
+                </div>
+            </div>
+
+            <div class="text-center">
+               <a href="invoice.html"><button id="generateBillBtn" class="btn-primary text-lg px-8 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    Generate Bill
+                </button></a> 
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBillBtn = document.getElementById('generateBillBtn');
+            const itemDetailsTableBody = document.getElementById('itemDetailsTableBody');
+            const subtotalAmountSpan = document.getElementById('subtotalAmount');
+            const finalTotalAmountSpan = document.getElementById('finalTotalAmount');
+            const paymentModeSpan = document.getElementById('paymentMode');
+
+            // Function to render items in the table
+            function renderItems(items) {
+                itemDetailsTableBody.innerHTML = ''; // Clear existing rows
+                let subtotal = 0;
+                if (items && items.length > 0) {
+                    items.forEach((item, index) => { // Added index for sno
+                        const row = document.createElement('tr');
+                        row.classList.add('table-row');
+                        const itemTotal = item.price * item.quantity; // Calculate total for each item
+                        row.innerHTML = `
+                            <td>${index + 1}.</td> <!-- Use index + 1 for serial number -->
+                            <td>${item['item-summary']}</td>
+                            <td>${item['batch-no']}</td>
+                            <td>${item.price.toFixed(2)}</td>
+                            <td>${item.quantity}</td>
+                            <td>${itemTotal.toFixed(2)}</td>
+                        `;
+                        itemDetailsTableBody.appendChild(row);
+                        subtotal += itemTotal;
+                    });
+                } else {
+                    // Display a message if no items
+                    const noItemsRow = document.createElement('tr');
+                    noItemsRow.innerHTML = `<td colspan="6" class="text-center py-4 text-gray-500">No items found.</td>`;
+                    itemDetailsTableBody.appendChild(noItemsRow);
+                }
+                subtotalAmountSpan.textContent = subtotal.toFixed(2);
+                finalTotalAmountSpan.textContent = subtotal.toFixed(2); // Assuming final total is same as subtotal for now
+            }
+
+            // Load initial data from local storage
+            function loadInvoiceData() {
+                const storedInvoiceData = localStorage.getItem('invoiceData');
+                const storedCartItems = localStorage.getItem('kaniMedicalsCartItems'); // Load cart items
+
+                let invoiceData = {};
+                let itemsToRender = [];
+
+                if (storedInvoiceData) {
+                    invoiceData = JSON.parse(storedInvoiceData);
+                    // If invoiceData has items, prioritize them
+                    if (invoiceData.items && invoiceData.items.length > 0) {
+                        itemsToRender = invoiceData.items;
+                    }
+                }
+
+                // If no items from invoiceData, or if cart items exist, use cart items
+                // This ensures that items added from product.html are always shown if present
+                if (storedCartItems) {
+                    const cartItems = JSON.parse(storedCartItems);
+                    if (cartItems.length > 0) {
+                        itemsToRender = cartItems;
+                    }
+                }
+                
+                // Populate form fields from invoiceData (if available)
+                document.getElementById('invoiceDate').value = invoiceData.invoiceDate || '';
+                document.getElementById('dlNo').value = invoiceData.dlNo || 'TN-14-20-00404';
+                document.getElementById('invoiceNumber').value = invoiceData.invoiceNumber || '';
+                document.getElementById('licenseNo').value = invoiceData.licenseNo || '892768067';
+                document.getElementById('billFromName').value = invoiceData.billFrom?.name || 'Kani Medical';
+                document.getElementById('billFromPhone').value = invoiceData.billFrom?.phone || '8900278569';
+                document.getElementById('billFromAddress').value = invoiceData.billFrom?.address || '10/95, Kani Medical, Kamarajar Street, Kumbalaperi Vilakku, Pavoorchatram.';
+                document.getElementById('billToName').value = invoiceData.billTo?.name || '';
+                document.getElementById('billToPhone').value = invoiceData.billTo?.phone || '';
+                document.getElementById('billToAddress').value = invoiceData.billTo?.address || '';
+
+                // Render items (either from invoiceData or cartItems)
+                renderItems(itemsToRender);
+                paymentModeSpan.textContent = invoiceData.paymentMode || 'Cash';
+            }
+
+            // Initial load of data when the page loads
+            loadInvoiceData();
+
+            generateBillBtn.addEventListener('click', () => {
+                // Collect form data dynamically
+                // Get the current items displayed in the table (which would be from cart or previously saved invoice)
+                const itemsCollected = [];
+                itemDetailsTableBody.querySelectorAll('.table-row').forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length === 6) { // Ensure it's a valid item row
+                        itemsCollected.push({
+                            sno: parseInt(cells[0].textContent),
+                            'item-summary': cells[1].textContent,
+                            'batch-no': cells[2].textContent,
+                            price: parseFloat(cells[3].textContent),
+                            quantity: parseInt(cells[4].textContent),
+                            total: parseFloat(cells[5].textContent)
+                        });
+                    }
+                });
+
+                const invoiceData = {
+                    invoiceDate: document.getElementById('invoiceDate').value,
+                    dlNo: document.getElementById('dlNo').value,
+                    invoiceNumber: document.getElementById('invoiceNumber').value,
+                    licenseNo: document.getElementById('licenseNo').value,
+                    billFrom: {
+                        name: document.getElementById('billFromName').value,
+                        phone: document.getElementById('billFromPhone').value,
+                        address: document.getElementById('billFromAddress').value,
+                    },
+                    billTo: {
+                        name: document.getElementById('billToName').value,
+                        phone: document.getElementById('billToPhone').value,
+                        address: document.getElementById('billToAddress').value,
+                    },
+                    items: itemsCollected, // Use dynamically collected items
+                    paymentMode: paymentModeSpan.textContent,
+                    finalTotal: parseFloat(finalTotalAmountSpan.textContent)
+                };
+
+                // Save data to local storage
+                localStorage.setItem('invoiceData', JSON.stringify(invoiceData));
+                console.log('Invoice Data saved to local storage:', invoiceData);
+
+                // Clear the cart items from local storage after generating the bill
+                localStorage.removeItem('kaniMedicalsCartItems');
+                console.log('Cart items cleared from local storage after bill generation.');
+
+
+                // Simple message box (instead of alert)
+                const messageBox = document.createElement('div');
+                messageBox.innerHTML = `
+                    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+                        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+                            <h3 class="text-xl font-bold mb-4">Bill Generated!</h3>
+                            <p class="text-gray-700 mb-6">Invoice data saved and cart cleared.</p>
+                            <button id="closeMessageBox" class="btn-primary">Close</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(messageBox);
+
+                document.getElementById('closeMessageBox').addEventListener('click', () => {
+                    document.body.removeChild(messageBox);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication - Zahrix</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000; /* Black background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+        }
+        .auth-container {
+            background-image: url('LoginPage.png'); /* Generic placeholder background */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: -1;
+        }
+        .auth-form-card {
+            backdrop-filter: blur(1px); /* Frosted glass effect */
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .input-group input {
+            padding-left: 3rem; /* Space for icon */
+            padding-right: 3rem; /* Space for eye icon */
+            border-radius: 0.75rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            border: 1px solid #d1d5db;
+            background-color: rgba(255, 255, 255, 0.2); /* Transparent background for inputs */
+            width: 100%;
+            font-size: 1rem;
+            color: #374151; /* Text color for input */
+            transition: all 0.2s ease-in-out;
+        }
+        .input-group input::placeholder {
+            color: #9ca3af; /* Placeholder color */
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        .input-group .icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        .input-group .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            cursor: pointer;
+        }
+        .error-message {
+            color: #ef4444; /* Tailwind red-500 */
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            text-align: left;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .button-group button, .button-group a {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container"></div> <!-- This now acts as the full-screen background -->
+
+    <div class="auth-form-card">
+        <h1 id="form-title" class="text-4xl font-bold text-white mb-8">Login</h1>
+
+        <!-- Login Form -->
+        <form id="login-form">
+            <div class="input-group">
+                <i class="fas fa-envelope icon"></i>
+                <input type="email" id="email" name="email" placeholder="Enter Your Mail Id"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <p id="email-error" class="error-message hidden">A valid email is required.</p>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" id="password" name="password" placeholder="Enter Your Password"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <i class="fas fa-eye toggle-password" id="toggle-login-password"></i> <!-- Eye icon for toggling password visibility -->
+                <p id="password-error" class="error-message hidden">Password is required.</p>
+            </div>
+
+            <div class="flex justify-end mb-6">
+                <a href="#" class="text-blue-600 hover:underline text-sm font-medium">Forgot Password?</a>
+            </div>
+
+            <div class="button-group">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Login
+                </button>
+                <button type="button" id="show-register-form-btn"
+                   class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Register
+                </button>
+            </div>
+        </form>
+
+        <!-- Registration Form (initially hidden) -->
+        <form id="register-form" class="hidden">
+            <div class="input-group">
+                <i class="fas fa-envelope icon"></i>
+                <input type="email" id="register-email" name="email" placeholder="Enter Your Mail Id"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <p id="register-email-error" class="error-message hidden">A valid email is required.</p>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" id="register-password" name="password" placeholder="Enter Your Password"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <i class="fas fa-eye toggle-password" id="toggle-register-password"></i>
+                <p id="register-password-error" class="error-message hidden">Password is required and must be at least 6 characters.</p>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock icon"></i>
+                <input type="password" id="register-confirm-password" name="confirm_password" placeholder="Confirm Password"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <i class="fas fa-eye toggle-password" id="toggle-register-confirm-password"></i>
+                <p id="register-confirm-password-error" class="error-message hidden">Passwords do not match.</p>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 mt-4">
+                Register Account
+            </button>
+            <p class="text-white text-center mt-6">
+                Already have an account? <a href="#" id="show-login-form-btn" class="text-blue-600 hover:underline font-medium">Login here</a>
+            </p>
+        </form>
+
+        <!-- Message box for login/registration status -->
+        <div id="auth-message-box" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center max-w-sm w-full">
+                <h3 id="auth-message-title" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+                <p id="auth-message-content" class="text-gray-600 mb-6"></p>
+               <a href="overview.html"> <button id="close-auth-message-box" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
+                    Close
+                </button></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to login form elements
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const emailError = document.getElementById('email-error');
+        const passwordInput = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        const toggleLoginPassword = document.getElementById('toggle-login-password');
+
+        // Get references to registration form elements
+        const registerForm = document.getElementById('register-form');
+        const registerEmailInput = document.getElementById('register-email');
+        const registerEmailError = document.getElementById('register-email-error');
+        const registerPasswordInput = document.getElementById('register-password');
+        const registerPasswordError = document.getElementById('register-password-error');
+        const toggleRegisterPassword = document.getElementById('toggle-register-password');
+        const registerConfirmPasswordInput = document.getElementById('register-confirm-password');
+        const registerConfirmPasswordError = document.getElementById('register-confirm-password-error');
+        const toggleRegisterConfirmPassword = document.getElementById('toggle-register-confirm-password');
+
+        // Get references to buttons and title
+        const showRegisterFormBtn = document.getElementById('show-register-form-btn');
+        const showLoginFormBtn = document.getElementById('show-login-form-btn');
+        const formTitle = document.getElementById('form-title');
+
+        // Get references to message box elements
+        const authMessageBox = document.getElementById('auth-message-box');
+        const authMessageTitle = document.getElementById('auth-message-title');
+        const authMessageContent = document.getElementById('auth-message-content');
+        const closeAuthMessageBoxButton = document.getElementById('close-auth-message-box');
+
+        /**
+         * Displays an error message for a given element.
+         * @param {HTMLElement} element - The paragraph element to display the error.
+         * @param {string} message - The error message text.
+         */
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        /**
+         * Hides an error message for a given element.
+         * @param {HTMLElement} element - The paragraph element to hide the error.
+         */
+        function hideError(element) {
+            element.classList.add('hidden');
+        }
+
+        /**
+         * Validates if a given string is a valid email format.
+         * @param {string} email - The email string to validate.
+         * @returns {boolean} - True if valid, false otherwise.
+         */
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        /**
+         * Sets up the password toggle functionality for an input field and its eye icon.
+         * @param {string} inputElementId - The ID of the password input element.
+         * @param {string} toggleIconId - The ID of the eye icon element.
+         */
+        function setupPasswordToggle(inputElementId, toggleIconId) {
+            const input = document.getElementById(inputElementId);
+            const toggle = document.getElementById(toggleIconId);
+
+            if (input && toggle) {
+                toggle.addEventListener('click', function() {
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+        }
+
+        // Initialize password toggles for both login and register forms
+        setupPasswordToggle('password', 'toggle-login-password');
+        setupPasswordToggle('register-password', 'toggle-register-password');
+        setupPasswordToggle('register-confirm-password', 'toggle-register-confirm-password');
+
+        /**
+         * Displays the login form and hides the registration form.
+         */
+        function showLoginForm() {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            formTitle.textContent = 'Login';
+            // Clear any previous errors when switching forms
+            hideError(emailError);
+            hideError(passwordError);
+            hideError(registerEmailError);
+            hideError(registerPasswordError);
+            hideError(registerConfirmPasswordError);
+        }
+
+        /**
+         * Displays the registration form and hides the login form.
+         */
+        function showRegisterForm() {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            formTitle.textContent = 'Register';
+            // Clear any previous errors when switching forms
+            hideError(emailError);
+            hideError(passwordError);
+            hideError(registerEmailError);
+            hideError(registerPasswordError);
+            hideError(registerConfirmPasswordError);
+        }
+
+        // Event listeners for switching forms
+        showRegisterFormBtn.addEventListener('click', showRegisterForm);
+        showLoginFormBtn.addEventListener('click', showLoginForm);
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+
+        /**
+         * Simulates checking login status and redirects if logged in.
+         * In a real application, this would involve an API call to a backend.
+         */
+        async function checkLoginStatus() {
+            try {
+                // Simulate a backend response for demonstration
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+                if (isLoggedIn) {
+                    // User is logged in, redirect to dashboard or overview page
+                    window.location.href = 'overview.html';
+                } else {
+                    // User is not logged in, show the login form by default
+                    showLoginForm();
+                    console.log('User is not logged in. Displaying login form.');
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+                // Optionally, show an error message to the user
+                showAuthMessageBox('Error', 'Could not check login status. Please try again later.');
+            }
+        }
+
+        // Handle login form submission
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let isValid = true;
+
+            // Validate Email
+            if (emailInput.value.trim() === '') {
+                showError(emailError, 'Email is required.');
+                isValid = false;
+            } else if (!isValidEmail(emailInput.value.trim())) {
+                showError(emailError, 'Please enter a valid email address.');
+                isValid = false;
+            } else {
+                hideError(emailError);
+            }
+
+            // Validate Password
+            if (passwordInput.value.trim() === '') {
+                showError(passwordError, 'Password is required.');
+                isValid = false;
+            } else {
+                hideError(passwordError);
+            }
+
+            if (isValid) {
+                console.log('Login attempt with:', {
+                    email: emailInput.value,
+                    password: passwordInput.value
+                });
+
+                try {
+                    // Simulate successful login
+                    localStorage.setItem('isLoggedIn', 'true'); // Simulate successful login
+                    showAuthMessageBox('Login Successful!', 'You have been successfully logged in.');
+                    loginForm.reset(); // Clear form fields
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showAuthMessageBox('Login Failed', 'An error occurred during login. Please try again.');
+                }
+            }
+        });
+
+        // Handle registration form submission
+        registerForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let isValid = true;
+
+            // Validate Email
+            if (registerEmailInput.value.trim() === '') {
+                showError(registerEmailError, 'Email is required.');
+                isValid = false;
+            } else if (!isValidEmail(registerEmailInput.value.trim())) {
+                showError(registerEmailError, 'Please enter a valid email address.');
+                isValid = false;
+            } else {
+                hideError(registerEmailError);
+            }
+
+            // Validate Password
+            if (registerPasswordInput.value.trim() === '') {
+                showError(registerPasswordError, 'Password is required.');
+                isValid = false;
+            } else if (registerPasswordInput.value.trim().length < 6) {
+                showError(registerPasswordError, 'Password must be at least 6 characters long.');
+                isValid = false;
+            }
+            else {
+                hideError(registerPasswordError);
+            }
+
+            // Validate Confirm Password
+            if (registerConfirmPasswordInput.value.trim() === '') {
+                showError(registerConfirmPasswordError, 'Confirm password is required.');
+                isValid = false;
+            } else if (registerPasswordInput.value !== registerConfirmPasswordInput.value) {
+                showError(registerConfirmPasswordError, 'Passwords do not match.');
+                isValid = false;
+            } else {
+                hideError(registerConfirmPasswordError);
+            }
+
+            if (isValid) {
+                console.log('Registration attempt with:', {
+                    email: registerEmailInput.value,
+                    password: registerPasswordInput.value
+                });
+
+                try {
+                    // Simulate successful registration
+                    showAuthMessageBox('Registration Successful!', 'Your account has been created. You can now log in.');
+                    registerForm.reset(); // Clear form fields
+                    showLoginForm(); // Switch back to login form after successful registration
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showAuthMessageBox('Registration Failed', 'An error occurred during registration. Please try again.');
+                }
+            }
+        });
+
+        // Close message box
+        closeAuthMessageBoxButton.addEventListener('click', () => {
+            authMessageBox.classList.add('hidden');
+        });
+
+        /**
+         * Shows the custom authentication message box.
+         * @param {string} title - The title for the message box.
+         * @param {string} content - The content message for the message box.
+         */
+        function showAuthMessageBox(title, content) {
+            authMessageTitle.textContent = title;
+            authMessageContent.textContent = content;
+            authMessageBox.classList.remove('hidden');
+        }
+    </script>
+
+</body>
+</html>
